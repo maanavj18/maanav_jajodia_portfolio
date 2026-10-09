@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProject, getSite } from "@/lib/content";
 
@@ -20,26 +19,26 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <article>
-      <p>
-        <Link href="/projects">Projects</Link>
+      <p className="back">
+        <a href="/projects">Projects</a>
       </p>
       <h1>{project.name}</h1>
-      <p>{project.dates}</p>
-      <ul className="inline-list">
-        {project.stack.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
+      <dl>
+        <dt>Dates</dt>
+        <dd className="nums">{project.dates}</dd>
+        <dt>Stack</dt>
+        <dd>{project.stack.join(", ")}</dd>
+      </dl>
 
-      {project.goal && (
-        <section>
+      {project.goal ? (
+        <section className="space-60">
           <h2>Goal</h2>
           <p>{project.goal}</p>
         </section>
-      )}
+      ) : null}
 
-      <section>
-        <h2>What I built</h2>
+      <section className="space-60">
+        <h2>Work</h2>
         <ul>
           {project.bullets.map((bullet) => (
             <li key={bullet}>{bullet}</li>
@@ -47,23 +46,23 @@ export default async function ProjectPage({ params }: Props) {
         </ul>
       </section>
 
-      {(project.demoUrl || project.repoUrl) && (
-        <section>
+      {project.demoUrl || project.repoUrl ? (
+        <section className="space-90">
           <h2>Links</h2>
-          <ul className="inline-list">
-            {project.demoUrl && (
+          <ul>
+            {project.demoUrl ? (
               <li>
                 <a href={project.demoUrl}>Demo</a>
               </li>
-            )}
-            {project.repoUrl && (
+            ) : null}
+            {project.repoUrl ? (
               <li>
                 <a href={project.repoUrl}>Repository</a>
               </li>
-            )}
+            ) : null}
           </ul>
         </section>
-      )}
+      ) : null}
     </article>
   );
 }

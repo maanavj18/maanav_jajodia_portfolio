@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ProjectTable } from "@/components/project-table";
 import { getSite } from "@/lib/content";
 
 export default function Home() {
@@ -7,62 +7,78 @@ export default function Home() {
 
   return (
     <>
-      <section>
-        <h1>{identity.name}</h1>
-        <p>{identity.headline}</p>
-        <ul className="inline-list">
-          <li>
-            <a href={`mailto:${identity.email}`}>{identity.email}</a>
-          </li>
-          <li>
-            <a href={identity.github}>github.com/{identity.githubHandle}</a>
-          </li>
-          <li>
-            <a href={identity.resumeHref}>Resume (PDF)</a>
-          </li>
-        </ul>
-      </section>
+      <h1>{identity.name}</h1>
+      <p>{identity.headline}</p>
+      <address>
+        <a href={`mailto:${identity.email}`}>{identity.email}</a>
+        <a href={identity.github}>github.com/{identity.githubHandle}</a>
+        <a href={identity.resumeHref}>Resume (PDF)</a>
+      </address>
 
-      {featured && (
-        <section>
-          <h2>Research</h2>
-          <h3>
+      {projects.length > 0 ? (
+        <section className="space-30" aria-labelledby="projects-heading">
+          <h2 id="projects-heading">Projects</h2>
+          <ProjectTable projects={projects} labelledBy="projects-heading" />
+        </section>
+      ) : null}
+
+      {featured ? (
+        <section className="loud space-60" aria-labelledby="lab-heading">
+          <h2 id="lab-heading">
             {featured.title}, {featured.organization}
-          </h3>
-          <p>
-            {featured.institution} · {featured.dates}
-          </p>
+          </h2>
+          <dl className="inline-facts">
+            {featured.institution ? (
+              <div>
+                <dt>Institution</dt>
+                <dd>{featured.institution}</dd>
+              </div>
+            ) : null}
+            <div>
+              <dt>Location</dt>
+              <dd>{featured.location}</dd>
+            </div>
+            <div>
+              <dt>Dates</dt>
+              <dd className="nums">{featured.dates}</dd>
+            </div>
+          </dl>
+        </section>
+      ) : null}
+
+      {featured ? (
+        <section className="space-90" aria-labelledby="research-heading">
+          <h2 id="research-heading">Research</h2>
           <ul>
             {featured.bullets.map((bullet) => (
               <li key={bullet}>{bullet}</li>
             ))}
           </ul>
-          <Link href="/experience">All experience</Link>
         </section>
-      )}
+      ) : null}
 
-      {projects.length > 0 && (
-        <section>
-          <h2>Projects</h2>
-          <ul>
-            {projects.map((project) => (
-              <li key={project.slug}>
-                <Link href={`/projects/${project.slug}`}>{project.name}</Link> · {project.dates} ·{" "}
-                {project.stack.join(", ")}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <section>
-        <h2>Education</h2>
-        <p>
-          {education.school}, {education.college}. {education.degree}, expected {education.expectedGraduation}.
-        </p>
-        <p>
-          GPA {education.gpa} · Minor in {education.minor} · Specialization in {education.specialization}
-        </p>
+      <section className="space-120" aria-labelledby="education-heading">
+        <h2 id="education-heading">Education</h2>
+        <dl>
+          <dt>School</dt>
+          <dd>{education.school}</dd>
+          <dt>College</dt>
+          <dd>{education.college}</dd>
+          <dt>Location</dt>
+          <dd>{education.location}</dd>
+          <dt>Degree</dt>
+          <dd>{education.degree}</dd>
+          <dt>Expected graduation</dt>
+          <dd className="nums">{education.expectedGraduation}</dd>
+          <dt>GPA</dt>
+          <dd className="nums">{education.gpa}</dd>
+          <dt>Minor</dt>
+          <dd>{education.minor}</dd>
+          <dt>Specialization</dt>
+          <dd>{education.specialization}</dd>
+          <dt>Coursework</dt>
+          <dd>{education.coursework.join("; ")}</dd>
+        </dl>
       </section>
     </>
   );

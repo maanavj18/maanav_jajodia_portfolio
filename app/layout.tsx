@@ -1,7 +1,28 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import type { Metadata, Viewport } from "next";
+import { Alegreya, Alegreya_SC, Kalam } from "next/font/google";
 import { getSite } from "@/lib/content";
 import "./globals.css";
+
+const alegreya = Alegreya({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-alegreya",
+  display: "swap",
+});
+
+const alegreyaSC = Alegreya_SC({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-alegreya-sc",
+  display: "swap",
+});
+
+const kalam = Kalam({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-kalam",
+  display: "swap",
+});
 
 export function generateMetadata(): Metadata {
   const { identity } = getSite();
@@ -11,29 +32,14 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { identity, interests } = getSite();
+export const viewport: Viewport = {
+  themeColor: "#f4efe2",
+};
 
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
-        <header className="site-header">
-          <Link href="/" className="site-name">
-            {identity.name}
-          </Link>
-          <nav aria-label="Primary">
-            <Link href="/projects">Projects</Link>
-            <Link href="/experience">Experience</Link>
-            {interests.length > 0 && <Link href="/interests">Interests</Link>}
-            <a href={identity.resumeHref}>Resume</a>
-          </nav>
-        </header>
-        <main>{children}</main>
-        <footer className="site-footer">
-          <a href={`mailto:${identity.email}`}>{identity.email}</a>
-          <a href={identity.github}>GitHub</a>
-        </footer>
-      </body>
+    <html lang="en" className={`${alegreya.variable} ${alegreyaSC.variable} ${kalam.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

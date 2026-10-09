@@ -23,7 +23,7 @@ Files in this skill:
 ```
 - [ ] 1. Preflight main
 - [ ] 2. Research (refresh anti-slop.md if missing or older than this round)
-- [ ] 3. Commit and push main
+- [ ] 3. Commit main (do not push)
 - [ ] 4. Launch one design subagent per direction
 - [ ] 5. Review results against each other
 - [ ] 6. Push branches and collect preview URLs
@@ -40,9 +40,9 @@ Launch one `generalPurpose` subagent with web access. It reads `directions.md` a
 
 Skip this step if `anti-slop.md` exists and Maanav did not ask for fresh research.
 
-### 3. Commit and push main
+### 3. Commit main
 
-Commit the skill files (including `anti-slop.md`) to `main` and push so every branch inherits them.
+Commit the skill files (including `anti-slop.md`) to `main` so every worktree inherits them. Do not push `main` during a round: on Vercel, `main` is production. Design branches carry the base commits, so their pushes produce previews on their own. `main` is pushed after Maanav picks a winner and it is merged.
 
 ### 4. Launch design subagents
 

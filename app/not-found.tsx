@@ -1,15 +1,16 @@
-import { getSite } from "@/lib/content";
+import Link from "next/link";
+import { SiteHeader } from "./_components/site-header";
 
 export default function NotFound() {
-  const { identity } = getSite();
-
   return (
     <>
-      <h1>Not found</h1>
-      <p>No page exists at this address.</p>
-      <p>
-        <a href="/">{identity.name}</a>
-      </p>
+      <SiteHeader />
+      <main id="main">
+        <h1>Not found</h1>
+        <p>
+          There is no page at this address. <Link href="/">Go to the index</Link>.
+        </p>
+      </main>
     </>
   );
 }

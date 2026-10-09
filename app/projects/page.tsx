@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { ProjectTable } from "@/components/project-table";
+import Link from "next/link";
 import { getSite } from "@/lib/content";
+import { Particulars, typeset } from "../_components/particulars";
+import { SiteHeader } from "../_components/site-header";
 
 export const metadata: Metadata = { title: "Projects" };
 
@@ -9,16 +11,24 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <h1 id="projects-heading">Projects</h1>
-      <ProjectTable projects={projects} labelledBy="projects-heading" />
-      {projects.map((project, index) => (
-        <section key={project.slug} className={index === 0 ? "space-60" : "space-120"}>
-          <h2>
-            <a href={`/projects/${project.slug}`}>{project.name}</a>
-          </h2>
-          <p>{project.bullets[0]}</p>
-        </section>
-      ))}
+      <SiteHeader current="projects" />
+      <main id="main">
+        <h1>Projects</h1>
+        {projects.map((project) => (
+          <section key={project.slug} className="entry" aria-labelledby={project.slug}>
+            <h2 id={project.slug}>
+              <Link href={`/projects/${project.slug}`}>{project.name}</Link>
+            </h2>
+            <Particulars
+              rows={[
+                ["Dates", project.dates],
+                ["Stack", project.stack.join(", ")],
+              ]}
+            />
+            {project.bullets[0] && <p>{typeset(project.bullets[0])}</p>}
+          </section>
+        ))}
+      </main>
     </>
   );
 }

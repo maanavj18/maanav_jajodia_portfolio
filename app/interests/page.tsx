@@ -9,13 +9,17 @@ export default function InterestsPage() {
   if (interests.length === 0) notFound();
 
   return (
-    <section>
-      <h1>Interests</h1>
-      <ul>
-        {interests.map((interest) => (
-          <li key={interest}>{interest}</li>
-        ))}
-      </ul>
-    </section>
+    <>
+      <header className="sign">
+        <h1>Interests</h1>
+      </header>
+      <div className="board">
+        <ul className="notes">
+          {interests.map((interest) => (
+            <li key={interest}>{interest}</li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }

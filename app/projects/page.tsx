@@ -1,26 +1,19 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Board } from "@/components/board";
 import { getSite } from "@/lib/content";
+import { projectDeparture } from "@/lib/departures";
 
 export const metadata: Metadata = { title: "Projects" };
 
 export default function ProjectsPage() {
-  const { projects } = getSite();
+  const rows = getSite().projects.map((project) => projectDeparture(project));
 
   return (
-    <section>
-      <h1>Projects</h1>
-      {projects.map((project) => (
-        <article key={project.slug}>
-          <h2>
-            <Link href={`/projects/${project.slug}`}>{project.name}</Link>
-          </h2>
-          <p>
-            {project.dates} · {project.stack.join(", ")}
-          </p>
-          <p>{project.bullets[0]}</p>
-        </article>
-      ))}
-    </section>
+    <>
+      <header className="sign">
+        <h1>Projects</h1>
+      </header>
+      {rows.length > 0 ? <Board id="projects" caption="DEPARTURES" rows={rows} /> : null}
+    </>
   );
 }

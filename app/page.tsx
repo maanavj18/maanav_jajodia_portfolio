@@ -1,16 +1,17 @@
-import Link from "next/link";
+import { Board } from "@/components/board";
 import { getSite } from "@/lib/content";
+import { homeDepartures } from "@/lib/departures";
 
 export default function Home() {
   const { identity, education, experience, projects } = getSite();
-  const featured = experience.find((role) => role.featured);
+  const rows = homeDepartures(experience, projects);
 
   return (
     <>
-      <section>
+      <header className="sign sign--home">
         <h1>{identity.name}</h1>
-        <p>{identity.headline}</p>
-        <ul className="inline-list">
+        <p className="deck">{identity.headline}</p>
+        <ul className="contacts">
           <li>
             <a href={`mailto:${identity.email}`}>{identity.email}</a>
           </li>
@@ -21,48 +22,36 @@ export default function Home() {
             <a href={identity.resumeHref}>Resume (PDF)</a>
           </li>
         </ul>
-      </section>
+      </header>
 
-      {featured && (
-        <section>
-          <h2>Research</h2>
-          <h3>
-            {featured.title}, {featured.organization}
-          </h3>
-          <p>
-            {featured.institution} · {featured.dates}
-          </p>
-          <ul>
-            {featured.bullets.map((bullet) => (
-              <li key={bullet}>{bullet}</li>
-            ))}
-          </ul>
-          <Link href="/experience">All experience</Link>
-        </section>
-      )}
+      {rows.length > 0 ? <Board id="home" caption="DEPARTURES" rows={rows} /> : null}
 
-      {projects.length > 0 && (
-        <section>
-          <h2>Projects</h2>
-          <ul>
-            {projects.map((project) => (
-              <li key={project.slug}>
-                <Link href={`/projects/${project.slug}`}>{project.name}</Link> · {project.dates} ·{" "}
-                {project.stack.join(", ")}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <section>
-        <h2>Education</h2>
-        <p>
-          {education.school}, {education.college}. {education.degree}, expected {education.expectedGraduation}.
+      <section className="education" aria-labelledby="education-heading">
+        <h2 id="education-heading">Education</h2>
+        <p className="audience">{identity.audience}</p>
+        <p className="edu-lead">
+          {education.degree}, {education.school}, {education.college}. {education.location}.
         </p>
-        <p>
-          GPA {education.gpa} · Minor in {education.minor} · Specialization in {education.specialization}
-        </p>
+        <dl className="facts">
+          <div>
+            <dt>GPA</dt>
+            <dd>{education.gpa}</dd>
+          </div>
+          <div>
+            <dt>Expected</dt>
+            <dd>{education.expectedGraduation}</dd>
+          </div>
+          <div>
+            <dt>Minor</dt>
+            <dd>{education.minor}</dd>
+          </div>
+          <div>
+            <dt>Specialization</dt>
+            <dd>{education.specialization}</dd>
+          </div>
+        </dl>
+        <h3>Coursework</h3>
+        <p className="coursework">{education.coursework.join("; ")}.</p>
       </section>
     </>
   );

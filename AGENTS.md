@@ -41,10 +41,6 @@ A design branch may change layout, typography, color, motion, and component stru
 - the page set above
 - the Vercel / server-rendered Next.js deployment
 
-First round, when implementation starts:
+First round: the twelve directions in `.cursor/skills/portfolio-design-fleet/directions.md`, one branch each (`design/research-editorial`, `design/product-case-study`, `design/technical-index`, and nine more).
 
-- `design/research-editorial`
-- `design/product-case-study`
-- `design/technical-index`
-
-Read `.cursor/skills/portfolio-design-branch/SKILL.md` before building a branch.
+Read `.cursor/skills/portfolio-design-branch/SKILL.md` before building a branch, and `.cursor/skills/portfolio-design-fleet/anti-slop.md` before making any visual decision. To run a whole round, follow `.cursor/skills/portfolio-design-fleet/SKILL.md`.

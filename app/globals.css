@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+.site-header,
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.site-header nav,
+.site-footer {
+  display: flex;
+  gap: 1rem;
+}
+
+.site-footer {
+  margin-top: 4rem;
+  justify-content: flex-start;
+}
+
+.inline-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  padding: 0;
+  list-style: none;
+}

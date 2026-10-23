@@ -1,26 +1,23 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getSite } from "@/lib/content";
+import { getChecklist } from "@/lib/exhibits";
+import { Checklist, ProjectExhibit } from "../components/exhibit";
 
 export const metadata: Metadata = { title: "Projects" };
 
 export default function ProjectsPage() {
   const { projects } = getSite();
+  const entries = getChecklist().filter((entry) => entry.key.startsWith("project:"));
 
   return (
-    <section>
-      <h1>Projects</h1>
+    <>
+      <header className="page-head">
+        <h1 className="page-title">Projects</h1>
+        <Checklist entries={entries} heading="Checklist" level="h2" id="project-checklist" />
+      </header>
       {projects.map((project) => (
-        <article key={project.slug}>
-          <h2>
-            <Link href={`/projects/${project.slug}`}>{project.name}</Link>
-          </h2>
-          <p>
-            {project.dates} · {project.stack.join(", ")}
-          </p>
-          <p>{project.bullets[0]}</p>
-        </article>
+        <ProjectExhibit key={project.slug} project={project} level="h2" />
       ))}
-    </section>
+    </>
   );
 }

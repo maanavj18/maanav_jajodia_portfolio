@@ -1,59 +1,53 @@
 import type { Metadata } from "next";
-import { getSite, type Role } from "@/lib/content";
+import { getSite } from "@/lib/content";
+import { RoleExhibit, WallLabels } from "../components/exhibit";
 
 export const metadata: Metadata = { title: "Experience" };
-
-function RoleEntry({ role }: { role: Role }) {
-  return (
-    <article>
-      <h3>
-        {role.title}, {role.organization}
-      </h3>
-      <p>
-        {[role.institution, role.location, role.dates].filter(Boolean).join(" · ")}
-      </p>
-      <ul>
-        {role.bullets.map((bullet) => (
-          <li key={bullet}>{bullet}</li>
-        ))}
-      </ul>
-    </article>
-  );
-}
 
 export default function ExperiencePage() {
   const { experience, leadership, skills } = getSite();
 
   return (
     <>
-      <h1>Experience</h1>
+      <header className="page-head">
+        <h1 className="page-title">Experience</h1>
+      </header>
+
       {experience.length > 0 && (
-        <section>
-          <h2>Research</h2>
+        <section className="room room-first" aria-labelledby="room-research">
+          <h2 id="room-research" className="room-title">
+            Research
+          </h2>
           {experience.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
+            <RoleExhibit key={role.slug} role={role} level="h3" />
           ))}
         </section>
       )}
+
       {leadership.length > 0 && (
-        <section>
-          <h2>Leadership</h2>
-          {leadership.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
-          ))}
+        <section className="room room-tight" aria-labelledby="room-leadership">
+          <h2 id="room-leadership" className="room-title">
+            Leadership
+          </h2>
+          <WallLabels roles={leadership} level="h3" />
         </section>
       )}
+
       {skills.length > 0 && (
-        <section>
-          <h2>Skills</h2>
-          <dl>
-            {skills.map((group) => (
-              <div key={group.label}>
-                <dt>{group.label}</dt>
-                <dd>{group.items.join(", ")}</dd>
-              </div>
-            ))}
-          </dl>
+        <section className="room room-tight" aria-labelledby="room-skills">
+          <h2 id="room-skills" className="room-title">
+            Skills
+          </h2>
+          <div className="wall-text">
+            <dl className="facts">
+              {skills.map((group) => (
+                <div key={group.label}>
+                  <dt>{group.label}</dt>
+                  <dd>{group.items.join(", ")}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </section>
       )}
     </>

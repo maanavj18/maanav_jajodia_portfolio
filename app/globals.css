@@ -1,38 +1,665 @@
+/*
+ * Museum placard. One gallery wall, one ink, one label board.
+ * Type scale: 17px body on a 1.5 ratio; display jumps to 5x and 8x body.
+ * Spacing unit: 17px x 1.5 line-height = 25.5px (--u).
+ */
+
 :root {
   color-scheme: light;
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
+
+  --wall: #f2f0eb; /* painted gallery wall, the page ground */
+  --placard: #fcfbf8; /* label board mounted beside each object */
+  --ink: #1b1a18; /* vinyl lettering, label text, drawn lines */
+  --ink-visited: #4b4741; /* links already followed */
+  --label-grey: #5e5a53; /* secondary label lines: dates, accession numbers */
+  --seam: #d3cec4; /* wall seams and rules between rows */
+  --label-edge: #8a8478; /* the cut edge of a mounted label board */
+  --graphite: #8a8478; /* secondary strokes inside drawings */
+  --wash: #b7b2a6; /* shaded band inside drawings */
+
+  --body: 1.0625rem;
+  --leading: 1.5;
+  --u: 1.59375rem;
+  --margin: clamp(1.25rem, 5vw, 5.5rem);
+
+  --t-small: 0.875rem;
+  --t-label: 0.9375rem;
+  --t-lead: clamp(1.25rem, 0.9rem + 0.9vw, 1.5rem);
+  --t-room: 1.5rem;
+  --t-wall-label: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  --t-title: clamp(3.25rem, 1.2rem + 4.4vw, 5.5rem);
+  --t-name: clamp(3.75rem, 1.4rem + 8.2vw, 8.5rem);
+
+  --header-h: 4.5rem;
+  --hang: 56svh;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--wall);
+  color: var(--ink);
+  font-family: var(--font-cooper-hewitt), sans-serif;
+  font-synthesis: none;
+  font-kerning: normal;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: var(--u);
 }
 
 body {
-  max-width: 44rem;
-  margin: 0 auto;
-  padding: 2rem 1.25rem;
+  margin: 0;
+  font-size: var(--body);
+  line-height: var(--leading);
+  font-weight: 400;
+  hanging-punctuation: first last;
 }
 
-.site-header,
-.site-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+ol,
+ul,
+figure {
+  margin: 0;
 }
 
-.site-header nav,
-.site-footer {
-  display: flex;
-  gap: 1rem;
+h1,
+h2,
+h3 {
+  font-weight: 400;
+  text-wrap: balance;
+  font-variant-numeric: lining-nums;
 }
 
-.site-footer {
-  margin-top: 4rem;
-  justify-content: flex-start;
+p,
+dd,
+li {
+  text-wrap: pretty;
 }
 
-.inline-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.25rem;
+ol,
+ul {
   padding: 0;
   list-style: none;
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Links and focus */
+
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+main a:visited,
+.site-footer a:visited {
+  color: var(--ink-visited);
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--placard);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+/* Focus inverts the link into a black label with white lettering. */
+a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  background: var(--ink);
+  color: var(--placard);
+  text-decoration-color: var(--placard);
+}
+
+a:focus-visible * {
+  color: inherit;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: var(--margin);
+  z-index: 1;
+  padding: 0.5rem 0.75rem;
+  background: var(--ink);
+  color: var(--placard);
+  transform: translateY(-300%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Header and footer */
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  min-height: var(--header-h);
+  padding: 1.4rem var(--margin) 1.1rem;
+  border-bottom: 1px solid var(--seam);
+}
+
+.site-name {
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.site-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.75rem;
+}
+
+.site-nav a {
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  text-decoration-line: underline;
+}
+
+main {
+  padding-inline: var(--margin);
+}
+
+.site-footer {
+  display: grid;
+  gap: var(--u);
+  margin-top: calc(var(--u) * 4);
+  padding: calc(var(--u) * 2) var(--margin) calc(var(--u) * 3);
+  border-top: 1px solid var(--seam);
+}
+
+.footer-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 2rem;
+  font-weight: 500;
+}
+
+.colophon {
+  max-inline-size: 62ch;
+  color: var(--label-grey);
+  font-size: var(--t-small);
+}
+
+/* Entrance wall: name, headline, contact, and the exhibition checklist */
+
+.entrance {
+  display: grid;
+  gap: calc(var(--u) * 2) var(--margin);
+  padding-block: calc(var(--u) * 2) calc(var(--u) * 3);
+}
+
+.name {
+  font-size: var(--t-name);
+  font-weight: 100;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.name-line {
+  display: block;
+}
+
+.headline {
+  max-inline-size: 30ch;
+  margin-top: calc(var(--u) * 1.25);
+  font-size: var(--t-lead);
+  line-height: 1.38;
+}
+
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.75rem;
+  margin-top: var(--u);
+}
+
+/* Checklist: the scannable index of every exhibit */
+
+.checklist-title {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ink);
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+.checklist-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  gap: 0.1rem 1rem;
+  align-items: baseline;
+  padding-block: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--seam);
+  text-decoration: none;
+}
+
+main a.checklist-row:visited {
+  color: var(--ink);
+}
+
+.checklist-accession,
+.checklist-dates {
+  color: var(--label-grey);
+  font-size: var(--t-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.checklist-name {
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.24em;
+}
+
+.checklist-row:hover .checklist-name {
+  text-decoration-color: currentColor;
+}
+
+.checklist-dates {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.checklist-detail {
+  grid-column: 2 / -1;
+  color: var(--label-grey);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+.checklist-row:focus-visible .checklist-accession,
+.checklist-row:focus-visible .checklist-dates,
+.checklist-row:focus-visible .checklist-detail {
+  color: var(--placard);
+}
+
+/* Rooms: each section opens on a seam in the wall */
+
+.room {
+  padding-top: calc(var(--u) * 4);
+}
+
+.room-tight {
+  padding-top: calc(var(--u) * 3);
+}
+
+.room-first {
+  padding-top: var(--u);
+}
+
+.room-title {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--ink);
+  font-size: var(--t-room);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.page-head {
+  display: grid;
+  gap: calc(var(--u) * 1.5) var(--margin);
+  padding-block: calc(var(--u) * 2) var(--u);
+}
+
+.page-title {
+  font-size: var(--t-title);
+  font-weight: 100;
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+
+/* Exhibit: one object per viewport, label beside the drawing */
+
+.exhibit {
+  display: grid;
+  align-content: center;
+  gap: calc(var(--u) * 1.25);
+  padding-block: calc(var(--u) * 2.5);
+  scroll-margin-top: var(--u);
+}
+
+.exhibit-title {
+  font-size: var(--t-title);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+
+h1.exhibit-title {
+  font-weight: 100;
+}
+
+.exhibit-object {
+  display: grid;
+  gap: calc(var(--u) * 1.5);
+  align-items: start;
+}
+
+.artwork {
+  width: 100%;
+}
+
+.artwork svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.placard {
+  max-inline-size: 27rem;
+  padding: 1.15rem 1.35rem 1.35rem;
+  background: var(--placard);
+  border: 1px solid var(--label-edge);
+  font-size: var(--t-label);
+  line-height: 1.47;
+}
+
+.tombstone dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.tomb-title dd {
+  margin-bottom: 0.2rem;
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.tomb-attribution dd {
+  font-weight: 500;
+}
+
+.tomb-dimensions dd {
+  color: var(--label-grey);
+}
+
+.tomb-accession dd {
+  margin-top: 0.5rem;
+  color: var(--label-grey);
+}
+
+.label-text {
+  max-inline-size: 62ch;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--seam);
+}
+
+.label-text p + p {
+  margin-top: 0.7em;
+}
+
+.label-more {
+  font-weight: 500;
+}
+
+/* Wall text: education, skills */
+
+.wall-text {
+  display: grid;
+  gap: var(--u);
+  padding-top: calc(var(--u) * 1.5);
+}
+
+.wall-text-lead {
+  max-inline-size: 36ch;
+  font-size: var(--t-lead);
+  line-height: 1.38;
+}
+
+.facts {
+  display: grid;
+  max-inline-size: 48rem;
+}
+
+.facts > div {
+  display: grid;
+  gap: 0 1.5rem;
+  padding-block: 0.55rem;
+  border-bottom: 1px solid var(--seam);
+}
+
+.facts dt {
+  color: var(--label-grey);
+  font-size: var(--t-small);
+}
+
+.interest-list li {
+  font-size: var(--t-lead);
+}
+
+/* Project page */
+
+.crumb {
+  padding-top: calc(var(--u) * 1.5);
+  color: var(--label-grey);
+  font-size: var(--t-small);
+}
+
+.crumb a {
+  color: var(--ink);
+}
+
+.next-exhibit {
+  padding-top: calc(var(--u) * 3);
+}
+
+.next-exhibit a {
+  display: inline-grid;
+  gap: 0.25rem;
+  text-decoration: none;
+}
+
+main .next-exhibit a:visited {
+  color: var(--ink);
+}
+
+.next-label {
+  color: var(--label-grey);
+  font-size: var(--t-small);
+}
+
+.next-exhibit a:focus-visible .next-label {
+  color: var(--placard);
+}
+
+.next-title {
+  font-size: var(--t-wall-label);
+  font-weight: 300;
+  line-height: 1.1;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+/* Drawings */
+
+.artwork svg * {
+  vector-effect: non-scaling-stroke;
+}
+
+.art-ink {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.art-ink-heavy {
+  stroke-width: 2.25;
+}
+
+.art-faint {
+  fill: none;
+  stroke: var(--graphite);
+  stroke-width: 0.75;
+}
+
+.art-band {
+  fill: var(--wash);
+  stroke: none;
+}
+
+/* Layouts */
+
+@media (min-width: 600px) {
+  .facts > div {
+    grid-template-columns: 10rem minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .entrance {
+    grid-template-columns: minmax(0, 7fr) minmax(22rem, 5fr);
+    align-items: start;
+    padding-block: calc(var(--u) * 2.5) calc(var(--u) * 3.5);
+  }
+
+  .page-head:has(.checklist) {
+    grid-template-columns: minmax(0, 7fr) minmax(22rem, 5fr);
+    align-items: start;
+  }
+
+  .exhibit-object {
+    grid-template-columns: auto minmax(18rem, 25rem);
+    justify-content: start;
+    column-gap: var(--margin);
+  }
+
+  .exhibit-object.is-text {
+    grid-template-columns: minmax(0, 27rem);
+  }
+
+  /* Hang every drawing to the same height so labels sit at one eye line. */
+  .artwork {
+    width: min(calc(var(--hang) * var(--aspect)), calc(100vw - 3 * var(--margin) - 26rem));
+  }
+}
+
+@media (min-width: 1000px) and (min-height: 640px) {
+  .entrance {
+    min-height: calc(100svh - var(--header-h));
+  }
+
+  .exhibit {
+    min-height: calc(100svh - var(--header-h));
+  }
+}
+
+/* 1366×768: keep the label beside the drawing, and the checklist in the first view. */
+@media (min-width: 1000px) and (max-height: 820px) {
+  :root {
+    --hang: 36svh;
+    --t-name: clamp(3.5rem, 7.2vw, 6.75rem);
+  }
+
+  .entrance {
+    padding-block: calc(var(--u) * 1.15) calc(var(--u) * 1.5);
+  }
+
+  .headline {
+    margin-top: calc(var(--u) * 0.75);
+  }
+
+  .exhibit {
+    gap: calc(var(--u) * 0.75);
+    padding-block: calc(var(--u) * 1);
+  }
+}
+
+@media (max-width: 999px) {
+  .artwork svg {
+    width: auto;
+    max-width: 100%;
+    max-height: 34svh;
+    height: auto;
+  }
+}
+
+@media (max-width: 599px) {
+  .site-nav ul {
+    gap: 0.25rem 1.25rem;
+  }
+
+  .checklist-row {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+  }
+
+  .checklist-dates {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .placard {
+    padding: 1rem 1.1rem 1.2rem;
+  }
+}
+
+/*
+ * The one moment of motion: StrokeAnalysis traces are recorded frame by frame
+ * as the drawing enters the viewport, finishing once it is fully in view.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .artwork {
+      view-timeline: --hang block;
+    }
+
+    .trace {
+      stroke-dasharray: 1;
+      animation: record linear both;
+      animation-timeline: --hang;
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@keyframes record {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }

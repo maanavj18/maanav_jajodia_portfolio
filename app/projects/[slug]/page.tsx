@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProject, getSite } from "@/lib/content";
+import { lines } from "@/lib/figures";
+import { Lines, Meta, fit } from "../../_components/specimen";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -20,37 +22,38 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <article>
-      <p>
-        <Link href="/projects">Projects</Link>
-      </p>
-      <h1>{project.name}</h1>
-      <p>{project.dates}</p>
-      <ul className="inline-list">
-        {project.stack.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
+      <header className="page-head wrap">
+        <p className="crumb">
+          <Link href="/projects">Projects</Link>
+        </p>
+        <div className="fit" style={fit(project.name)}>
+          <h1 className="display display--page">{project.name}</h1>
+        </div>
+        <Meta lead={project.dates} rest={project.stack.join(", ")} />
+      </header>
 
       {project.goal && (
-        <section>
-          <h2>Goal</h2>
-          <p>{project.goal}</p>
+        <section className="wrap block" aria-labelledby="goal">
+          <h2 id="goal" className="label">
+            Goal
+          </h2>
+          <p className="prose">{project.goal}</p>
         </section>
       )}
 
-      <section>
-        <h2>What I built</h2>
-        <ul>
-          {project.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
-          ))}
-        </ul>
+      <section className="wrap block" aria-labelledby="built">
+        <h2 id="built" className="label">
+          What I built
+        </h2>
+        <Lines items={lines(project.slug, project.bullets)} />
       </section>
 
       {(project.demoUrl || project.repoUrl) && (
-        <section>
-          <h2>Links</h2>
-          <ul className="inline-list">
+        <section className="wrap block" aria-labelledby="links">
+          <h2 id="links" className="label">
+            Links
+          </h2>
+          <ul className="contact">
             {project.demoUrl && (
               <li>
                 <a href={project.demoUrl}>Demo</a>

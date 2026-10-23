@@ -1,59 +1,65 @@
 import type { Metadata } from "next";
-import { getSite, type Role } from "@/lib/content";
+import { getSite } from "@/lib/content";
+import { RoleBlock, fit } from "../_components/specimen";
 
 export const metadata: Metadata = { title: "Experience" };
-
-function RoleEntry({ role }: { role: Role }) {
-  return (
-    <article>
-      <h3>
-        {role.title}, {role.organization}
-      </h3>
-      <p>
-        {[role.institution, role.location, role.dates].filter(Boolean).join(" · ")}
-      </p>
-      <ul>
-        {role.bullets.map((bullet) => (
-          <li key={bullet}>{bullet}</li>
-        ))}
-      </ul>
-    </article>
-  );
-}
 
 export default function ExperiencePage() {
   const { experience, leadership, skills } = getSite();
 
   return (
     <>
-      <h1>Experience</h1>
+      <header className="page-head wrap">
+        <div className="fit" style={fit("Experience")}>
+          <h1 className="display display--page">Experience</h1>
+        </div>
+      </header>
+
       {experience.length > 0 && (
-        <section>
-          <h2>Research</h2>
-          {experience.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
-          ))}
+        <section className="scene scene--ink" aria-labelledby="research">
+          <div className="wrap">
+            <h2 id="research" className="label">
+              Research
+            </h2>
+            <div className="roles">
+              {experience.map((role) => (
+                <RoleBlock key={role.slug} role={role} heading="h3" />
+              ))}
+            </div>
+          </div>
         </section>
       )}
+
       {leadership.length > 0 && (
-        <section>
-          <h2>Leadership</h2>
-          {leadership.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
-          ))}
+        <section className="scene" aria-labelledby="leadership">
+          <div className="wrap">
+            <h2 id="leadership" className="label">
+              Leadership
+            </h2>
+            <div className="roles">
+              {leadership.map((role) => (
+                <RoleBlock key={role.slug} role={role} heading="h3" />
+              ))}
+            </div>
+          </div>
         </section>
       )}
+
       {skills.length > 0 && (
-        <section>
-          <h2>Skills</h2>
-          <dl>
-            {skills.map((group) => (
-              <div key={group.label}>
-                <dt>{group.label}</dt>
-                <dd>{group.items.join(", ")}</dd>
-              </div>
-            ))}
-          </dl>
+        <section className="scene scene--short" aria-labelledby="skills">
+          <div className="wrap">
+            <h2 id="skills" className="label">
+              Skills
+            </h2>
+            <dl className="skills">
+              {skills.map((group) => (
+                <div key={group.label}>
+                  <dt>{group.label}</dt>
+                  <dd>{group.items.join(", ")}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </section>
       )}
     </>

@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { flowFor, tableRows } from "@/lib/apparatus";
 import { getProject, getSite } from "@/lib/content";
+import { CiteBlock } from "../../_components/cite";
+import { FlowFigure } from "../../_components/figures";
+import { Prose } from "../../_components/prose";
+import { ResultsTable } from "../../_components/results-table";
+import { noteCounter } from "../../_components/sidenote";
+import { statementId, Statements } from "../../_components/statements";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -18,39 +25,66 @@ export default async function ProjectPage({ params }: Props) {
   const project = getProject((await params).slug);
   if (!project) notFound();
 
+  const { identity, projects } = getSite();
+  const others = projects.filter((other) => other.slug !== project.slug);
+  const rows = tableRows(project.slug, project.bullets);
+  const flow = flowFor(project.slug, project.bullets);
+  const anchor = (statement: number) => `#${statementId("1", statement)}`;
+
   return (
-    <article>
-      <p>
-        <Link href="/projects">Projects</Link>
-      </p>
-      <h1>{project.name}</h1>
-      <p>{project.dates}</p>
-      <ul className="inline-list">
-        {project.stack.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
+    <article className="sheet">
+      <header className="front front--page">
+        <nav aria-label="Breadcrumb" className="crumb">
+          <Link href="/projects">Projects</Link>
+        </nav>
+        <h1 className="title title--project">{project.name}</h1>
+        <p className="affil">{project.dates}</p>
+        <p className="keywords">
+          <span className="runin">Keywords</span> <Prose text={project.stack.join("; ")} />
+        </p>
+        {project.goal && (
+          <p className="goal">
+            <span className="runin">Goal</span> <Prose text={project.goal} />
+          </p>
+        )}
+      </header>
 
-      {project.goal && (
-        <section>
-          <h2>Goal</h2>
-          <p>{project.goal}</p>
-        </section>
-      )}
-
-      <section>
-        <h2>What I built</h2>
-        <ul>
-          {project.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
-          ))}
-        </ul>
+      <section id="work" className="section" aria-labelledby="work-heading">
+        <h2 id="work-heading">
+          <span className="hang secno">1</span> What I built
+        </h2>
+        <Statements
+          prefix="1"
+          slug={project.slug}
+          bullets={project.bullets}
+          cite={{
+            next: noteCounter(),
+            table: { id: "table-1", label: "Table 1" },
+            source: (
+              <>
+                Source: {project.name}, {project.dates}.
+              </>
+            ),
+          }}
+        />
+        <ResultsTable
+          id="table-1"
+          label="Table 1"
+          caption={`${project.name} figures, by statement.`}
+          rows={rows.map((row) => ({
+            ...row,
+            ref: { href: anchor(row.statement), label: `1.${row.statement}` },
+          }))}
+        />
+        {flow && <FlowFigure id="figure-1" label="Figure 1" flow={flow} prefix="1" anchor={anchor} subject={project.name} />}
       </section>
 
       {(project.demoUrl || project.repoUrl) && (
-        <section>
-          <h2>Links</h2>
-          <ul className="inline-list">
+        <section id="links" className="section" aria-labelledby="links-heading">
+          <h2 id="links-heading">
+            <span className="hang secno">2</span> Materials
+          </h2>
+          <ul className="materials">
             {project.demoUrl && (
               <li>
                 <a href={project.demoUrl}>Demo</a>
@@ -63,6 +97,28 @@ export default async function ProjectPage({ params }: Props) {
             )}
           </ul>
         </section>
+      )}
+
+      <CiteBlock
+        author={identity.name}
+        title={project.name}
+        path={`/projects/${project.slug}`}
+        keySuffix={project.slug}
+        date={project.dates}
+        note={project.stack.join(", ")}
+      />
+
+      {others.length > 0 && (
+        <nav className="see-also" aria-label="Other projects">
+          <span className="runin">See also</span>{" "}
+          {others.map((other, i) => (
+            <span key={other.slug}>
+              {i > 0 && "; "}
+              <Link href={`/projects/${other.slug}`}>{other.name}</Link>, {other.dates}
+            </span>
+          ))}
+          .
+        </nav>
       )}
     </article>
   );

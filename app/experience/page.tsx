@@ -1,17 +1,26 @@
 import type { Metadata } from "next";
+import { MapCanvas } from "@/components/map-canvas";
+import { Marker } from "@/components/markers";
+import { Sheet } from "@/components/sheet";
 import { getSite, type Role } from "@/lib/content";
+import { leadingFigure } from "@/lib/sheet-geo";
 
 export const metadata: Metadata = { title: "Experience" };
 
-function RoleEntry({ role }: { role: Role }) {
+const EXPERIENCE_SEED = 88121;
+const POSITIONS = ["pos-nw", "pos-se", "pos-sw"];
+
+function RoleRecord({ role, heading }: { role: Role; heading: "h2" | "h3" }) {
+  const Title = heading;
   return (
-    <article>
-      <h3>
-        {role.title}, {role.organization}
-      </h3>
+    <article id={role.slug} className="role">
+      <Title>{role.organization}</Title>
       <p>
-        {[role.institution, role.location, role.dates].filter(Boolean).join(" · ")}
+        {role.title}
+        {role.institution ? `, ${role.institution}` : ""}
+        {`, ${role.location}`}
       </p>
+      <p className="label">{role.dates}</p>
       <ul>
         {role.bullets.map((bullet) => (
           <li key={bullet}>{bullet}</li>
@@ -23,39 +32,54 @@ function RoleEntry({ role }: { role: Role }) {
 
 export default function ExperiencePage() {
   const { experience, leadership, skills } = getSite();
+  const stations = [...experience, ...leadership];
+  const featured = experience.find((role) => role.featured) ?? experience[0];
+  const f1 = featured ? leadingFigure(featured.bullets, /0\.79/) : undefined;
 
   return (
-    <>
-      <h1>Experience</h1>
-      {experience.length > 0 && (
-        <section>
-          <h2>Research</h2>
-          {experience.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
+    <Sheet title="Experience" current="experience">
+      <div className="stations">
+        <MapCanvas seed={EXPERIENCE_SEED} size="sheet" coordinates scale elevations>
+          {stations.map((role, index) => (
+            <a key={role.slug} className={`feature ${POSITIONS[index] ?? "pos-mark"}`} href={`#${role.slug}`}>
+              <Marker kind="benchmark" />
+              {index === 0 && f1 && <span className="spot">{f1}</span>}
+              {index === 0 && <span className="label">F1 at IoU 0.5</span>}
+              <p className="place">{role.organization}</p>
+              <p>{role.title}</p>
+              <p className="label">{role.dates}</p>
+            </a>
           ))}
-        </section>
-      )}
-      {leadership.length > 0 && (
-        <section>
-          <h2>Leadership</h2>
-          {leadership.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
-          ))}
-        </section>
-      )}
-      {skills.length > 0 && (
-        <section>
-          <h2>Skills</h2>
-          <dl>
-            {skills.map((group) => (
-              <div key={group.label}>
-                <dt>{group.label}</dt>
-                <dd>{group.items.join(", ")}</dd>
-              </div>
+          </MapCanvas>
+        {experience.map((role) => (
+          <RoleRecord key={role.slug} role={role} heading="h2" />
+        ))}
+        {leadership.length > 0 && (
+          <section className="leadership" aria-labelledby="leadership-title">
+            <h2 id="leadership-title" className="section-label">
+              Leadership
+            </h2>
+            {leadership.map((role) => (
+              <RoleRecord key={role.slug} role={role} heading="h3" />
             ))}
-          </dl>
-        </section>
-      )}
-    </>
+          </section>
+        )}
+        {skills.length > 0 && (
+          <section aria-labelledby="skills-title">
+            <h2 id="skills-title" className="section-label">
+              Skills
+            </h2>
+            <dl className="skills">
+              {skills.map((group) => (
+                <div key={group.label}>
+                  <dt className="label">{group.label}</dt>
+                  <dd>{group.items.join(", ")}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
+      </div>
+    </Sheet>
   );
 }

@@ -1,7 +1,21 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Archivo, Azeret_Mono } from "next/font/google";
+import { SiteHeader } from "@/components/site-header";
 import { getSite } from "@/lib/content";
 import "./globals.css";
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  display: "swap",
+  axes: ["wdth"],
+  variable: "--font-archivo",
+});
+
+const azeret = Azeret_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mono",
+});
 
 export function generateMetadata(): Metadata {
   const { identity } = getSite();
@@ -15,24 +29,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const { identity, interests } = getSite();
 
   return (
-    <html lang="en">
+    <html lang="en" className={`${archivo.variable} ${azeret.variable}`}>
       <body>
-        <header className="site-header">
-          <Link href="/" className="site-name">
-            {identity.name}
-          </Link>
-          <nav aria-label="Primary">
-            <Link href="/projects">Projects</Link>
-            <Link href="/experience">Experience</Link>
-            {interests.length > 0 && <Link href="/interests">Interests</Link>}
-            <a href={identity.resumeHref}>Resume</a>
-          </nav>
-        </header>
-        <main>{children}</main>
-        <footer className="site-footer">
-          <a href={`mailto:${identity.email}`}>{identity.email}</a>
-          <a href={identity.github}>GitHub</a>
-        </footer>
+        <div className="chassis">
+          <a className="skip" href="#content">
+            skip to content
+          </a>
+          <SiteHeader
+            name={identity.name}
+            resumeHref={identity.resumeHref}
+            showInterests={interests.length > 0}
+          />
+          <main id="content">{children}</main>
+          <footer className="colophon">
+            <a href={`mailto:${identity.email}`}>{identity.email}</a>
+            <a href={identity.github}>{identity.githubHandle}</a>
+          </footer>
+        </div>
       </body>
     </html>
   );

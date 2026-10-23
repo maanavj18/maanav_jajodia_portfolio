@@ -1,61 +1,69 @@
 import type { Metadata } from "next";
+import { LiveMark } from "@/components/live-mark";
+import { Notes } from "@/components/notes";
+import { SpecTable } from "@/components/spec-table";
 import { getSite, type Role } from "@/lib/content";
+import { figuresFor, isLive, modelNumber, roleSpecRows, typographic, type SpecRow } from "@/lib/specs";
 
-export const metadata: Metadata = { title: "Experience" };
+export const metadata: Metadata = { title: "experience" };
 
-function RoleEntry({ role }: { role: Role }) {
+function RoleSheet({ role, heading }: { role: Role; heading: "h2" | "h3" }) {
+  const titleId = `${role.slug}-title`;
+  const Title = heading;
   return (
-    <article>
-      <h3>
-        {role.title}, {role.organization}
-      </h3>
-      <p>
-        {[role.institution, role.location, role.dates].filter(Boolean).join(" · ")}
-      </p>
-      <ul>
-        {role.bullets.map((bullet) => (
-          <li key={bullet}>{bullet}</li>
-        ))}
-      </ul>
+    <article className="unit">
+      <p className="model">{modelNumber(role)}</p>
+      <div>
+        <div className="title-row">
+          <Title id={titleId}>{role.organization}</Title>
+          {isLive(role.dates) ? <LiveMark /> : null}
+        </div>
+        <p className="role-title">{typographic(role.title)}</p>
+        <p className="when">{role.dates}</p>
+        <SpecTable labelledBy={titleId} rows={roleSpecRows(role)} />
+        <Notes bullets={role.bullets} figures={figuresFor(role)} />
+      </div>
     </article>
   );
 }
 
 export default function ExperiencePage() {
   const { experience, leadership, skills } = getSite();
+  const skillRows: SpecRow[] = skills.map((group) => ({
+    label: group.label.toLowerCase(),
+    value: group.items.join(", "),
+  }));
 
   return (
     <>
-      <h1>Experience</h1>
-      {experience.length > 0 && (
-        <section>
-          <h2>Research</h2>
+      <header className="page-head">
+        <h1>experience</h1>
+      </header>
+
+      {experience.length > 0 ? (
+        <section className="group" aria-labelledby="research">
+          <h2 id="research">research</h2>
           {experience.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
+            <RoleSheet key={role.slug} role={role} heading="h3" />
           ))}
         </section>
-      )}
-      {leadership.length > 0 && (
-        <section>
-          <h2>Leadership</h2>
+      ) : null}
+
+      {leadership.length > 0 ? (
+        <section className="group" aria-labelledby="leadership">
+          <h2 id="leadership">leadership</h2>
           {leadership.map((role) => (
-            <RoleEntry key={role.slug} role={role} />
+            <RoleSheet key={role.slug} role={role} heading="h3" />
           ))}
         </section>
-      )}
-      {skills.length > 0 && (
-        <section>
-          <h2>Skills</h2>
-          <dl>
-            {skills.map((group) => (
-              <div key={group.label}>
-                <dt>{group.label}</dt>
-                <dd>{group.items.join(", ")}</dd>
-              </div>
-            ))}
-          </dl>
+      ) : null}
+
+      {skillRows.length > 0 ? (
+        <section className="group" aria-labelledby="skills">
+          <h2 id="skills">skills</h2>
+          <SpecTable labelledBy="skills" rows={skillRows} />
         </section>
-      )}
+      ) : null}
     </>
   );
 }

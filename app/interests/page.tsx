@@ -9,9 +9,9 @@ export default function InterestsPage() {
   if (interests.length === 0) notFound();
 
   return (
-    <section>
-      <h1>Interests</h1>
-      <ul>
+    <section className="interests-sheet">
+      <h1>interests</h1>
+      <ul className="course-list">
         {interests.map((interest) => (
           <li key={interest}>{interest}</li>
         ))}

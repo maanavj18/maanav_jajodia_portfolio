@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Schibsted_Grotesk } from "next/font/google";
+import { MastBar } from "@/components/mast";
+import { ColumnBed } from "@/components/poster";
 import { getSite } from "@/lib/content";
 import "./globals.css";
+
+const schibsted = Schibsted_Grotesk({
+  subsets: ["latin"],
+  weight: "variable",
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 export function generateMetadata(): Metadata {
   const { identity } = getSite();
@@ -12,27 +21,31 @@ export function generateMetadata(): Metadata {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { identity, interests } = getSite();
+  const { identity, education, interests } = getSite();
 
   return (
-    <html lang="en">
+    <html lang="en" className={schibsted.className}>
       <body>
-        <header className="site-header">
-          <Link href="/" className="site-name">
-            {identity.name}
-          </Link>
-          <nav aria-label="Primary">
-            <Link href="/projects">Projects</Link>
-            <Link href="/experience">Experience</Link>
-            {interests.length > 0 && <Link href="/interests">Interests</Link>}
-            <a href={identity.resumeHref}>Resume</a>
-          </nav>
-        </header>
-        <main>{children}</main>
-        <footer className="site-footer">
-          <a href={`mailto:${identity.email}`}>{identity.email}</a>
-          <a href={identity.github}>GitHub</a>
-        </footer>
+        <a className="skip" href="#content">
+          Skip to content
+        </a>
+        <div className="sheet">
+          <MastBar
+            name={identity.name}
+            school={education.school}
+            resumeHref={identity.resumeHref}
+            showInterests={interests.length > 0}
+          />
+          <main id="content" className="poster">
+            <ColumnBed />
+            {children}
+            <ColumnBed />
+          </main>
+          <footer className="colophon">
+            <a href={`mailto:${identity.email}`}>{identity.email}</a>
+            <a href={identity.github}>github.com/{identity.githubHandle}</a>
+          </footer>
+        </div>
       </body>
     </html>
   );

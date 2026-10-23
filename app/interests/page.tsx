@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { DisplayTitle } from "@/components/display-title";
+import { Overprint } from "@/components/overprint";
+import { Records } from "@/components/records";
 import { getSite } from "@/lib/content";
 
 export const metadata: Metadata = { title: "Interests" };
@@ -9,13 +12,16 @@ export default function InterestsPage() {
   if (interests.length === 0) notFound();
 
   return (
-    <section>
-      <h1>Interests</h1>
-      <ul>
-        {interests.map((interest) => (
-          <li key={interest}>{interest}</li>
-        ))}
-      </ul>
-    </section>
+    <>
+      <div className="opener">
+        <div className="masthead">
+          <DisplayTitle as="h1" size="xl" weight={700} tilt="-1.6deg">
+            Interests
+          </DisplayTitle>
+        </div>
+        <Overprint />
+      </div>
+      <Records items={interests} />
+    </>
   );
 }

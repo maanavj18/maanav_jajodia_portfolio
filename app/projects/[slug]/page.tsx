@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DisplayTitle } from "@/components/display-title";
+import { Overprint } from "@/components/overprint";
+import { PullFigure } from "@/components/pull-figure";
+import { Records } from "@/components/records";
+import { Spread } from "@/components/spread";
 import { getProject, getSite } from "@/lib/content";
 
 type Props = { params: Promise<{ slug: string }> };
+
+const figures: Record<string, { value: string; unit: string }> = {
+  "stroke-analysis": { value: "30+", unit: "FPS" },
+  flightscope: { value: "500+", unit: "routes" },
+};
 
 export function generateStaticParams() {
   return getSite().projects.map((project) => ({ slug: project.slug }));
@@ -18,52 +28,62 @@ export default async function ProjectPage({ params }: Props) {
   const project = getProject((await params).slug);
   if (!project) notFound();
 
+  const pull = figures[project.slug];
+  const lead = project.bullets[0];
+  const showPull = Boolean(pull && lead && lead.includes(pull.value) && lead.includes(pull.unit));
+
   return (
     <article>
-      <p>
+      <p className="back">
         <Link href="/projects">Projects</Link>
       </p>
-      <h1>{project.name}</h1>
-      <p>{project.dates}</p>
-      <ul className="inline-list">
-        {project.stack.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-
-      {project.goal && (
-        <section>
-          <h2>Goal</h2>
-          <p>{project.goal}</p>
-        </section>
-      )}
-
-      <section>
-        <h2>What I built</h2>
-        <ul>
-          {project.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
-          ))}
-        </ul>
-      </section>
-
-      {(project.demoUrl || project.repoUrl) && (
-        <section>
-          <h2>Links</h2>
-          <ul className="inline-list">
-            {project.demoUrl && (
-              <li>
-                <a href={project.demoUrl}>Demo</a>
-              </li>
-            )}
-            {project.repoUrl && (
-              <li>
-                <a href={project.repoUrl}>Repository</a>
-              </li>
-            )}
-          </ul>
-        </section>
-      )}
+      <div className="masthead">
+        <DisplayTitle as="h1" size="xl" weight={400} tilt="-1.5deg">
+          {project.name}
+        </DisplayTitle>
+      </div>
+      <Spread className="chapter-tight">
+        <div>
+          <p className="meta num">{project.dates}</p>
+          <p className="stack">
+            <span className="label">Stack</span>
+            {project.stack.join(", ")}
+          </p>
+          {showPull && pull && lead ? (
+            <PullFigure bullet={lead} value={pull.value} unit={pull.unit} />
+          ) : null}
+          <div className="detail-stamp">
+            <Overprint />
+          </div>
+        </div>
+        <div>
+          <Records items={showPull ? project.bullets.slice(1) : project.bullets} />
+          {project.goal ? (
+            <section className="chapter-tight">
+              <h2 className="section-head">
+                <DisplayTitle as="span" size="md" tilt="1.6deg">
+                  Goal
+                </DisplayTitle>
+              </h2>
+              <p className="measure">{project.goal}</p>
+            </section>
+          ) : null}
+          {project.demoUrl || project.repoUrl ? (
+            <ul className="contacts">
+              {project.demoUrl ? (
+                <li>
+                  <a href={project.demoUrl}>Demo</a>
+                </li>
+              ) : null}
+              {project.repoUrl ? (
+                <li>
+                  <a href={project.repoUrl}>Repository</a>
+                </li>
+              ) : null}
+            </ul>
+          ) : null}
+        </div>
+      </Spread>
     </article>
   );
 }

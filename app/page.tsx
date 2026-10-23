@@ -1,4 +1,8 @@
-import Link from "next/link";
+import { DisplayTitle } from "@/components/display-title";
+import { Overprint } from "@/components/overprint";
+import { Plate } from "@/components/plate";
+import { PullFigure } from "@/components/pull-figure";
+import { Spread } from "@/components/spread";
 import { getSite } from "@/lib/content";
 
 export default function Home() {
@@ -7,61 +11,83 @@ export default function Home() {
 
   return (
     <>
-      <section>
-        <h1>{identity.name}</h1>
-        <p>{identity.headline}</p>
-        <ul className="inline-list">
-          <li>
-            <a href={`mailto:${identity.email}`}>{identity.email}</a>
-          </li>
-          <li>
-            <a href={identity.github}>github.com/{identity.githubHandle}</a>
-          </li>
-          <li>
-            <a href={identity.resumeHref}>Resume (PDF)</a>
-          </li>
-        </ul>
+      <section className="cover">
+        <div className="cover-grid">
+          <div className="masthead">
+            <DisplayTitle as="h1" size="xl" weight={400} tilt="-1.6deg" settle className="display-oneline">
+              {identity.name}
+            </DisplayTitle>
+          </div>
+          <p className="headline">{identity.headline}</p>
+          <ul className="contacts">
+            <li>
+              <a href={`mailto:${identity.email}`}>{identity.email}</a>
+            </li>
+            <li>
+              <a href={identity.github}>github.com/{identity.githubHandle}</a>
+            </li>
+            <li>
+              <a href={identity.resumeHref}>Resume (PDF)</a>
+            </li>
+          </ul>
+          <Overprint />
+        </div>
       </section>
 
-      {featured && (
+      <Spread className="spread-drop-right">
+        {featured ? (
+          <Plate
+            title={featured.organization}
+            href="/experience"
+            tilt="2.2deg"
+            meta={
+              <>
+                <p className="meta">
+                  {[featured.title, featured.institution, featured.location].filter(Boolean).join(", ")}
+                </p>
+                <p className="meta num">{featured.dates}</p>
+              </>
+            }
+          >
+            <PullFigure bullet={featured.bullets[0]} value="0.79" unit="F1" />
+          </Plate>
+        ) : null}
         <section>
-          <h2>Research</h2>
-          <h3>
-            {featured.title}, {featured.organization}
-          </h3>
-          <p>
-            {featured.institution} · {featured.dates}
-          </p>
-          <ul>
-            {featured.bullets.map((bullet) => (
-              <li key={bullet}>{bullet}</li>
-            ))}
-          </ul>
-          <Link href="/experience">All experience</Link>
+          <h2 className="section-head">
+            <DisplayTitle as="span" size="md" tilt="-2.4deg">
+              Projects
+            </DisplayTitle>
+          </h2>
+          {projects.map((project, index) => (
+            <Plate
+              key={project.slug}
+              level="h3"
+              size="md"
+              title={project.name}
+              href={`/projects/${project.slug}`}
+              tilt={index % 2 === 0 ? "2.8deg" : "-2.1deg"}
+              meta={<p className="meta num">{project.dates}</p>}
+            >
+              <p className="stack">{project.stack.join(", ")}</p>
+              <p className="measure lede">{project.bullets[0]}</p>
+            </Plate>
+          ))}
         </section>
-      )}
+      </Spread>
 
-      {projects.length > 0 && (
-        <section>
-          <h2>Projects</h2>
-          <ul>
-            {projects.map((project) => (
-              <li key={project.slug}>
-                <Link href={`/projects/${project.slug}`}>{project.name}</Link> · {project.dates} ·{" "}
-                {project.stack.join(", ")}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <section>
-        <h2>Education</h2>
-        <p>
-          {education.school}, {education.college}. {education.degree}, expected {education.expectedGraduation}.
+      <section className="chapter-ruled">
+        <h2 className="section-head">
+          <DisplayTitle as="span" size="md" tilt="1.8deg">
+            Education
+          </DisplayTitle>
+        </h2>
+        <p className="measure">
+          {education.degree}, {education.school}. {education.college}, {education.location}. Expected&nbsp;
+          <span className="num">{education.expectedGraduation}</span>.
         </p>
-        <p>
-          GPA {education.gpa} · Minor in {education.minor} · Specialization in {education.specialization}
+        <p className="measure follow">
+          GPA&nbsp;<span className="num">{education.gpa}</span>. Minor in {education.minor}. Specialization in{" "}
+          {education.specialization}.
         </p>
       </section>
     </>

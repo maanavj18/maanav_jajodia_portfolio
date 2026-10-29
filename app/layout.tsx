@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import Link from "next/link";
 import { getSite } from "@/lib/content";
+import { NavLinks } from "./_components/nav-links";
 import "./globals.css";
+
+const sourceSerif = localFont({
+  src: [
+    { path: "./fonts/SourceSerif4-Roman.subset.woff2", weight: "200 900", style: "normal" },
+    { path: "./fonts/SourceSerif4-Italic.subset.woff2", weight: "200 900", style: "italic" },
+  ],
+  variable: "--font-source-serif",
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
+});
 
 export function generateMetadata(): Metadata {
   const { identity } = getSite();
@@ -15,23 +27,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const { identity, interests } = getSite();
 
   return (
-    <html lang="en">
+    <html lang="en" className={sourceSerif.variable}>
       <body>
-        <header className="site-header">
-          <Link href="/" className="site-name">
+        <a className="skip" href="#main">
+          Skip to main text
+        </a>
+        <header className="runhead">
+          <Link href="/" className="runhead-name">
             {identity.name}
           </Link>
           <nav aria-label="Primary">
-            <Link href="/projects">Projects</Link>
-            <Link href="/experience">Experience</Link>
-            {interests.length > 0 && <Link href="/interests">Interests</Link>}
-            <a href={identity.resumeHref}>Resume</a>
+            <NavLinks showInterests={interests.length > 0} resumeHref={identity.resumeHref} />
           </nav>
         </header>
-        <main>{children}</main>
-        <footer className="site-footer">
-          <a href={`mailto:${identity.email}`}>{identity.email}</a>
-          <a href={identity.github}>GitHub</a>
+        <main id="main" tabIndex={-1}>
+          {children}
+        </main>
+        <footer className="colophon">
+          <p>
+            <span className="runin">Correspondence</span>{" "}
+            <a href={`mailto:${identity.email}`}>{identity.email}</a>
+            <span className="sep" aria-hidden="true">
+              {" · "}
+            </span>
+            <a href={identity.github}>github.com/{identity.githubHandle}</a>
+          </p>
+          <p className="colophon-type">Set in Source Serif 4, by Frank Grießhammer for Adobe, under the SIL Open Font License.</p>
         </footer>
       </body>
     </html>
